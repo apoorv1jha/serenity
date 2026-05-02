@@ -85,7 +85,7 @@ async function submit() {
     });
     const data = await res.json();
     if (data.success) {
-      window.location.href = data.redirect;
+      window.location.href = "/";
     } else {
       err.textContent = data.error || 'Something went wrong';
       err.classList.add('show');
