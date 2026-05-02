@@ -18,7 +18,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))    
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 SYSTEM_PROMPT = """You are Serenity, a highly empathetic and supportive mental health assistant.
 Provide emotional support, coping strategies, and guidance for stress, anxiety, depression, and loneliness.
@@ -194,7 +194,7 @@ def chat():
 
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="llama3-8b-8192",
             messages=groq_messages,
             max_tokens=500,
             temperature=0.7
@@ -224,4 +224,4 @@ if __name__ == "__main__":
         db.create_all()
         print("✅ Database ready!")
         print("✅ Open http://127.0.0.1:5000 in your browser")
-   app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False)
