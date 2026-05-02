@@ -194,7 +194,7 @@ def chat():
 
     try:
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             messages=groq_messages,
             max_tokens=500,
             temperature=0.7
