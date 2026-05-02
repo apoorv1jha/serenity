@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serenity – Mental Health Support</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:wght@300;400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+
+<!-- Mobile overlay for sidebar -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="app-shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-icon">🌿</span>
+        <span class="brand-name">Serenity</span>
+      </div>
+      <button class="new-chat-btn" onclick="newSession()">+ New chat</button>
+    </div>
+
+    <div class="session-list" id="sessionList">
+      {% for s in sessions %}
+      <div class="session-item {% if loop.first %}active{% endif %}"
+           id="sess-{{ s.id }}"
+           onclick="loadSession({{ s.id }})">
+        <span class="sess-title">{{ s.title }}</span>
+        <button class="sess-del" onclick="deleteSession(event, {{ s.id }})" title="Delete">✕</button>
+      </div>
+      {% else %}
+      <p class="no-sessions">No chats yet.<br/>Start a new conversation!</p>
+      {% endfor %}
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">{{ user.username[0].upper() }}</div>
+        <div>
+          <p class="user-name">{{ user.username }}</p>
+          <p class="user-email">{{ user.email }}</p>
+        </div>
+      </div>
+      <a href="/logout" class="logout-btn">Sign out</a>
+    </div>
+  </aside>
+
+  <!-- ── Main chat ── -->
+  <main class="chat-main">
+
+    <!-- Top bar (mobile) -->
+    <div class="topbar">
+      <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">☰</button>
+      <span class="topbar-title">🌿 Serenity</span>
+      <div style="width:40px"></div>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages" id="messages"></div>
+
+    <!-- Crisis banner -->
+    <div id="crisisBanner" class="crisis-banner">
+      🆘 <strong>You are not alone.</strong>
+      Emergency: <a href="tel:112">112</a> &nbsp;|&nbsp;
+      iCall India: <a href="tel:9152987821">9152987821</a> &nbsp;|&nbsp;
+      Vandrevala (24/7): <a href="tel:18602662345">1860-2662-345</a>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <textarea id="userInput" placeholder="Share what's on your mind…" rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>

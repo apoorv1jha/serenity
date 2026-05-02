@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serenity – {% if mode == 'login' %}Sign In{% else %}Create Account{% endif %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f0f7f4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(15,110,86,.1);padding:40px 36px;width:100%;max-width:420px}
+    .logo{text-align:center;margin-bottom:28px}
+    .logo span{font-size:36px}
+    .logo h1{font-family:'Fraunces',serif;font-size:24px;font-weight:400;color:#0F6E56;margin-top:8px}
+    .logo p{font-size:13px;color:#888;margin-top:4px}
+    label{display:block;font-size:13px;font-weight:500;color:#444;margin-bottom:6px;margin-top:16px}
+    input{width:100%;padding:11px 14px;border:1px solid #c8e0d8;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1a1a1a;background:#f7fbf9;outline:none;transition:border .15s}
+    input:focus{border-color:#5DCAA5}
+    .btn{width:100%;margin-top:22px;padding:12px;background:#1D9E75;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s}
+    .btn:hover{background:#0F6E56}
+    .btn:disabled{background:#9FE1CB;cursor:not-allowed}
+    .toggle{text-align:center;margin-top:18px;font-size:13px;color:#666}
+    .toggle a{color:#1D9E75;text-decoration:none;font-weight:500}
+    .error-msg{background:#FAECE7;color:#713013;border:1px solid #F09975;border-radius:8px;padding:9px 13px;font-size:13px;margin-top:14px;display:none}
+    .error-msg.show{display:block}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <span>🌿</span>
+    <h1>Serenity</h1>
+    <p>{% if mode == 'login' %}Welcome back{% else %}Your safe space starts here{% endif %}</p>
+  </div>
+
+  {% if mode == 'register' %}
+  <label>Username</label>
+  <input type="text" id="username" placeholder="e.g. apoorv123" autocomplete="username"/>
+  <label>Email</label>
+  <input type="email" id="email" placeholder="you@email.com" autocomplete="email"/>
+  {% else %}
+  <label>Username</label>
+  <input type="text" id="username" placeholder="Your username" autocomplete="username"/>
+  {% endif %}
+
+  <label>Password</label>
+  <input type="password" id="password" placeholder="••••••••" autocomplete="{% if mode=='login' %}current-password{% else %}new-password{% endif %}"
+         onkeydown="if(event.key==='Enter') submit()"/>
+
+  <div class="error-msg" id="errMsg"></div>
+  <button class="btn" id="submitBtn" onclick="submit()">
+    {% if mode == 'login' %}Sign In{% else %}Create Account{% endif %}
+  </button>
+
+  <p class="toggle">
+    {% if mode == 'login' %}
+      Don't have an account? <a href="/register">Sign up</a>
+    {% else %}
+      Already have an account? <a href="/login">Sign in</a>
+    {% endif %}
+  </p>
+</div>
+
+<script>
+async function submit() {
+  const btn = document.getElementById('submitBtn');
+  const err = document.getElementById('errMsg');
+  err.classList.remove('show');
+  btn.disabled = true;
+  btn.textContent = 'Please wait…';
+
+  const body = {
+    username: document.getElementById('username').value.trim(),
+    password: document.getElementById('password').value,
+    {% if mode == 'register' %}
+    email: document.getElementById('email').value.trim(),
+    {% endif %}
+  };
+
+  try {
+    const res  = await fetch('{{ url_for(mode) }}', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.success) {
+      window.location.href = data.redirect;
+    } else {
+      err.textContent = data.error || 'Something went wrong';
+      err.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = '{% if mode == "login" %}Sign In{% else %}Create Account{% endif %}';
+    }
+  } catch(e) {
+    err.textContent = 'Network error. Is the server running?';
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = '{% if mode == "login" %}Sign In{% else %}Create Account{% endif %}';
+  }
+}
+</script>
+</body>
+</html>
