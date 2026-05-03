@@ -27,7 +27,7 @@ Rules:
 - Be calm, warm, and non-judgmental
 - Acknowledge feelings before giving suggestions
 - Never diagnose or prescribe medication
-- Keep responses concise (3-5 sentences)
+- Keep responses concise (1-2 sentences or under 50 words)
 - Ask one gentle follow-up question
 - If user mentions self-harm or suicide, include CRISIS_ALERT in response and urge professional help
 - Use simple human language, no clinical jargon"""
