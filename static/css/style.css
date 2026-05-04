@@ -252,7 +252,7 @@ body {
 .bubble {
   max-width: 72%;
   min-width: 80px;
-  width: fit-content;
+  width: auto;
   padding: 11px 15px;
   border-radius: 18px;
   font-size: 14px; line-height: 1.7;
