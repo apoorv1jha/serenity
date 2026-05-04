@@ -414,3 +414,41 @@ body.dark .mood-modal-title { color: var(--green-mid); }
   .input-toolbar { display: none; }
   .crisis-banner { font-size: 12px; padding: 9px 12px; }
 }
+
+/* ── Voice ── */
+.mic-btn {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border2);
+  font-size: 20px; cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.mic-btn:hover { background: var(--green-light); border-color: var(--green-mid); }
+.mic-btn.listening {
+  background: #FF4444; border-color: #FF4444;
+  animation: micPulse 1s infinite;
+}
+@keyframes micPulse {
+  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,68,68,.4); }
+  50%      { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(255,68,68,0); }
+}
+
+.voice-status {
+  background: #FF4444; color: #fff;
+  padding: 8px 16px; font-size: 13px;
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+
+.voice-pulse {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #fff; animation: micPulse 1s infinite;
+  flex-shrink: 0;
+}
+
+.voice-stop-btn {
+  margin-left: auto; background: rgba(255,255,255,.2);
+  border: none; color: #fff; padding: 4px 12px;
+  border-radius: 6px; cursor: pointer; font-size: 12px;
+}
+.voice-stop-btn:hover { background: rgba(255,255,255,.35); }

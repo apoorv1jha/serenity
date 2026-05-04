@@ -331,6 +331,7 @@ async function sendMessage() {
     setActiveSession(data.session_id);
 
     renderMessage('bot', data.reply, [], formatTime(new Date().toISOString()), true);
+    speakText(data.reply);
 
   } catch (err) {
     removeTyping();
@@ -372,4 +373,133 @@ function formatTime(iso) {
 
 function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Voice Input (Speech to Text) ───────────────────────────────────────────
+let recognition   = null;
+let isListening   = false;
+let botVoiceOn    = true;  // Bot speaks replies by default
+
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('Voice input is not supported in this browser. Please use Chrome or Edge.');
+    return null;
+  }
+  const r = new SpeechRecognition();
+  r.continuous      = false;
+  r.interimResults  = true;
+  r.lang            = currentLanguage === 'hi' ? 'hi-IN' : 'en-IN';
+
+  r.onstart = () => {
+    isListening = true;
+    document.getElementById('micBtn').classList.add('listening');
+    document.getElementById('micBtn').textContent = '🔴';
+    document.getElementById('voiceStatus').style.display = 'flex';
+    document.getElementById('voiceStatusText').textContent = 'Listening... speak now';
+  };
+
+  r.onresult = (e) => {
+    const transcript = Array.from(e.results)
+      .map(r => r[0].transcript).join('');
+    document.getElementById('userInput').value = transcript;
+    document.getElementById('voiceStatusText').textContent = `"${transcript}"`;
+    autoResize(document.getElementById('userInput'));
+  };
+
+  r.onend = () => {
+    isListening = false;
+    document.getElementById('micBtn').classList.remove('listening');
+    document.getElementById('micBtn').textContent = '🎤';
+    document.getElementById('voiceStatus').style.display = 'none';
+    // Auto send if there's text
+    const text = document.getElementById('userInput').value.trim();
+    if (text) sendMessage();
+  };
+
+  r.onerror = (e) => {
+    isListening = false;
+    document.getElementById('micBtn').classList.remove('listening');
+    document.getElementById('micBtn').textContent = '🎤';
+    document.getElementById('voiceStatus').style.display = 'none';
+    if (e.error !== 'no-speech') {
+      console.error('Speech error:', e.error);
+    }
+  };
+
+  return r;
+}
+
+function toggleListening() {
+  if (isListening) {
+    stopListening();
+  } else {
+    startListening();
+  }
+}
+
+function startListening() {
+  recognition = initSpeechRecognition();
+  if (!recognition) return;
+  try {
+    recognition.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-IN';
+    recognition.start();
+  } catch(e) {
+    console.error('Could not start recognition:', e);
+  }
+}
+
+function stopListening() {
+  if (recognition) {
+    recognition.stop();
+  }
+}
+
+// ── Voice Output (Text to Speech) ─────────────────────────────────────────
+function toggleBotVoice() {
+  botVoiceOn = !botVoiceOn;
+  const btn1 = document.getElementById('voiceToggleBtn');
+  const btn2 = document.getElementById('voiceTopBtn');
+  const label = botVoiceOn ? '🔊 Voice On' : '🔇 Voice Off';
+  if (btn1) btn1.textContent = label;
+  if (btn2) btn2.textContent = botVoiceOn ? '🔊' : '🔇';
+
+  if (!botVoiceOn) window.speechSynthesis.cancel();
+
+  // Show toast
+  const t = document.createElement('div');
+  t.className   = 'toast';
+  t.textContent = botVoiceOn ? '🔊 Bot voice ON' : '🔇 Bot voice OFF';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2000);
+}
+
+function speakText(text) {
+  if (!botVoiceOn) return;
+  if (!window.speechSynthesis) return;
+
+  // Cancel any ongoing speech
+  window.speechSynthesis.cancel();
+
+  // Clean text — remove emojis and special chars for cleaner speech
+  const clean = text.replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+                    .replace(/[🌿💙🆘]/g, '')
+                    .trim();
+
+  const utter  = new SpeechSynthesisUtterance(clean);
+  utter.lang   = currentLanguage === 'hi' ? 'hi-IN' : 'en-IN';
+  utter.rate   = 0.95;
+  utter.pitch  = 1.05;
+  utter.volume = 1;
+
+  // Try to pick a pleasant voice
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v =>
+    v.lang.startsWith(currentLanguage === 'hi' ? 'hi' : 'en') && v.name.includes('Female')
+  ) || voices.find(v =>
+    v.lang.startsWith(currentLanguage === 'hi' ? 'hi' : 'en')
+  );
+  if (preferred) utter.voice = preferred;
+
+  window.speechSynthesis.speak(utter);
 }

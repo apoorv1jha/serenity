@@ -63,6 +63,7 @@
       <div class="topbar-right">
         <button class="topbar-icon-btn" onclick="toggleDark()">🌙</button>
         <button class="topbar-icon-btn" onclick="showMoodChecker()">😊</button>
+        <button class="topbar-icon-btn" onclick="toggleBotVoice()" id="voiceTopBtn" title="Toggle bot voice">🔊</button>
       </div>
     </div>
 
@@ -75,15 +76,27 @@
       Vandrevala (24/7): <a href="tel:18602662345">1860-2662-345</a>
     </div>
 
+    <!-- Voice status bar -->
+    <div id="voiceStatus" class="voice-status" style="display:none;">
+      <span class="voice-pulse"></span>
+      <span id="voiceStatusText">Listening...</span>
+      <button onclick="stopListening()" class="voice-stop-btn">Stop</button>
+    </div>
+
     <div class="input-area">
       <div class="input-toolbar">
         <button class="tool-btn" onclick="showMoodChecker()">😊 Mood</button>
         <button class="tool-btn" onclick="exportSession()">⬇️ Export</button>
-        <a href="/coping" class="tool-btn">🧘 Coping Tips</a>
-        <a href="/anon" class="tool-btn" target="_blank">👤 Anonymous</a>
+        <a href="/coping" class="tool-btn">🧘 Coping</a>
+        <a href="/anon" class="tool-btn" target="_blank">👤 Anon</a>
+        <button class="tool-btn" onclick="toggleBotVoice()" id="voiceToggleBtn">🔊 Voice On</button>
       </div>
       <textarea id="userInput" placeholder="Share what's on your mind…" rows="1"
         onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <!-- Mic button -->
+      <button class="mic-btn" id="micBtn" onclick="toggleListening()" title="Voice input">
+        🎤
+      </button>
       <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
              stroke-linecap="round" stroke-linejoin="round">
