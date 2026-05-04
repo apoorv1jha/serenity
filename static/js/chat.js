@@ -143,9 +143,10 @@ function renderMessage(role, text, chips = [], timeStr = null) {
   av.textContent = role === 'bot' ? '🌿' : 'You';
 
   const wrap = document.createElement('div');
-  wrap.style.display   = 'flex';
-  wrap.style.flexDirection = 'column';
-  wrap.style.alignItems = role === 'user' ? 'flex-end' : 'flex-start';
+ wrap.style.display   = 'flex';
+wrap.style.flexDirection = 'column';
+wrap.style.alignItems = role === 'user' ? 'flex-end' : 'flex-start';
+wrap.style.maxWidth = '72%';
 
   const bub = document.createElement('div');
   bub.className   = 'bubble';
