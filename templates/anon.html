@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serenity – Anonymous Chat</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f0f7f4;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+    .wrap{background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(15,110,86,.1);width:100%;max-width:600px;height:580px;display:flex;flex-direction:column;overflow:hidden}
+    .header{background:linear-gradient(135deg,#0F6E56,#1D9E75);padding:16px 20px;display:flex;align-items:center;gap:10px}
+    .header h1{font-family:'Fraunces',serif;font-size:18px;font-weight:400;color:#fff}
+    .header p{font-size:12px;color:rgba(255,255,255,.75);margin-top:2px}
+    .badge-anon{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:3px 10px;border-radius:20px;margin-left:auto}
+    .messages{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:12px;background:#f7fbf9}
+    .msg-row{display:flex;align-items:flex-end;gap:8px;animation:fadeUp .3s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .msg-row.user{flex-direction:row-reverse}
+    .av{width:28px;height:28px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+    .msg-row.user .av{background:#eef2f0;font-size:11px;color:#555;font-weight:500}
+    .bubble-wrap{display:flex;flex-direction:column;max-width:78%}
+    .bubble-wrap.user{align-items:flex-end}
+    .bubble{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.65;color:#1a1a1a;white-space:pre-wrap;overflow-wrap:break-word;width:fit-content}
+    .msg-row.bot .bubble{background:#fff;border:1px solid #e0ede8;border-bottom-left-radius:4px}
+    .msg-row.user .bubble{background:#1D9E75;color:#fff;border-bottom-right-radius:4px}
+    .typing-bub{background:#fff;border:1px solid #e0ede8;border-radius:16px;border-bottom-left-radius:4px;padding:12px 14px;display:flex;gap:5px;align-items:center}
+    .typing-bub span{width:6px;height:6px;border-radius:50%;background:#5DCAA5;animation:bounce 1.2s infinite}
+    .typing-bub span:nth-child(2){animation-delay:.2s}.typing-bub span:nth-child(3){animation-delay:.4s}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+    .input-area{padding:12px 14px;background:#fff;border-top:1px solid #e8f0ec;display:flex;gap:8px;align-items:flex-end}
+    textarea{flex:1;resize:none;border:1px solid #c8e0d8;border-radius:10px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1a1a1a;background:#f7fbf9;outline:none;min-height:42px;max-height:100px;line-height:1.5}
+    textarea:focus{border-color:#5DCAA5}
+    .send-btn{width:42px;height:42px;border-radius:50%;background:#1D9E75;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .send-btn:hover{background:#0F6E56}
+    .send-btn:disabled{background:#9FE1CB;cursor:not-allowed}
+    .note{font-size:12px;color:#888;text-align:center;margin-bottom:14px}
+    .note a{color:#1D9E75;text-decoration:none}
+  </style>
+</head>
+<body>
+<p class="note">👤 Anonymous mode — no account needed. <a href="/login">Login</a> to save history.</p>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h1>🌿 Serenity</h1>
+      <p>Safe, judgment-free support</p>
+    </div>
+    <span class="badge-anon">Anonymous</span>
+  </div>
+  <div class="messages" id="messages"></div>
+  <div class="input-area">
+    <textarea id="userInput" placeholder="Share what's on your mind…" rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="send()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+</div>
+<script>
+  const history = [];
+  let busy = false;
+
+  function addMsg(role, text, animate) {
+    const msgs = document.getElementById('messages');
+    const row  = document.createElement('div');
+    row.className = 'msg-row ' + role;
+    const av = document.createElement('div');
+    av.className   = 'av';
+    av.textContent = role === 'bot' ? '🌿' : 'You';
+    const wrap = document.createElement('div');
+    wrap.className = 'bubble-wrap ' + role;
+    const bub = document.createElement('div');
+    bub.className = 'bubble';
+    if (animate && role === 'bot') {
+      const words = text.split(' ');
+      let i = 0;
+      const iv = setInterval(() => {
+        if (i < words.length) { bub.textContent += (i?'':'')+words[i++]+' '; scroll(); }
+        else clearInterval(iv);
+      }, 35);
+    } else { bub.textContent = text; }
+    wrap.appendChild(bub);
+    row.appendChild(av); row.appendChild(wrap);
+    msgs.appendChild(row);
+    scroll();
+  }
+
+  function scroll() { const el=document.getElementById('messages'); el.scrollTop=el.scrollHeight; }
+
+  function showTyping() {
+    const msgs=document.getElementById('messages');
+    const row=document.createElement('div'); row.className='msg-row bot'; row.id='ti';
+    const av=document.createElement('div'); av.className='av'; av.textContent='🌿';
+    const b=document.createElement('div'); b.className='typing-bub'; b.innerHTML='<span></span><span></span><span></span>';
+    row.appendChild(av); row.appendChild(b); msgs.appendChild(row); scroll();
+  }
+
+  async function send() {
+    if (busy) return;
+    const input = document.getElementById('userInput');
+    const text  = input.value.trim();
+    if (!text) return;
+    input.value=''; input.style.height='auto';
+    addMsg('user', text, false);
+    history.push({role:'user', content:text});
+    busy=true; document.getElementById('sendBtn').disabled=true; showTyping();
+    try {
+      const res  = await fetch('/anon/chat', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history})});
+      const data = await res.json();
+      document.getElementById('ti')?.remove();
+      if (data.error) throw new Error(data.error);
+      history.push({role:'assistant', content:data.reply});
+      addMsg('bot', data.reply, true);
+    } catch(e) {
+      document.getElementById('ti')?.remove();
+      addMsg('bot', 'Something went wrong: '+e.message, false);
+    }
+    busy=false; document.getElementById('sendBtn').disabled=false; input.focus();
+  }
+
+  // Welcome message
+  addMsg('bot', "Hey! I'm Serenity 🌿 This is a completely anonymous space — nothing is saved.\n\nWhat's on your mind today?", false);
+</script>
+</body>
+</html>

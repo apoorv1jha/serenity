@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serenity – Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f0f7f4;min-height:100vh;padding:30px 20px;color:#1a1a1a}
+    .back{display:inline-flex;align-items:center;gap:6px;color:#1D9E75;text-decoration:none;font-size:14px;margin-bottom:24px}
+    h1{font-family:'Fraunces',serif;font-size:28px;font-weight:400;color:#0F6E56;margin-bottom:24px}
+    .stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:30px}
+    .stat-card{background:#fff;border-radius:14px;padding:20px 24px;box-shadow:0 4px 20px rgba(15,110,86,.07);min-width:150px}
+    .stat-num{font-size:36px;font-weight:500;color:#1D9E75}
+    .stat-label{font-size:13px;color:#888;margin-top:4px}
+    table{width:100%;max-width:800px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(15,110,86,.07);border-collapse:collapse}
+    th{background:#f0f7f4;padding:12px 16px;text-align:left;font-size:13px;font-weight:500;color:#555}
+    td{padding:12px 16px;font-size:13px;border-top:1px solid #f0f7f4;color:#333}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px}
+    .badge-admin{background:#E1F5EE;color:#0F6E56}
+    .badge-user{background:#f0f0f0;color:#888}
+  </style>
+</head>
+<body>
+  <a href="/" class="back">← Back to chat</a>
+  <h1>⚙️ Admin Dashboard</h1>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num">{{ total_users }}</div>
+      <div class="stat-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ total_chats }}</div>
+      <div class="stat-label">Total Chats</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ total_messages }}</div>
+      <div class="stat-label">Total Messages</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Joined</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td><span class="badge {% if u.is_admin %}badge-admin{% else %}badge-user{% endif %}">
+          {% if u.is_admin %}Admin{% else %}User{% endif %}
+        </span></td>
+        <td>{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serenity – Coping Techniques</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f0f7f4;min-height:100vh;padding:30px 20px;color:#1a1a1a}
+    .back{display:inline-flex;align-items:center;gap:6px;color:#1D9E75;text-decoration:none;font-size:14px;margin-bottom:24px}
+    .back:hover{color:#0F6E56}
+    h1{font-family:'Fraunces',serif;font-size:28px;font-weight:400;color:#0F6E56;margin-bottom:6px}
+    .subtitle{font-size:14px;color:#888;margin-bottom:30px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;max-width:900px}
+    .card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 4px 20px rgba(15,110,86,.07)}
+    .card-icon{font-size:32px;margin-bottom:12px}
+    .card h2{font-size:16px;font-weight:500;color:#0F6E56;margin-bottom:8px}
+    .card p{font-size:13px;color:#555;line-height:1.7}
+    .card ol,.card ul{font-size:13px;color:#555;line-height:1.8;padding-left:18px;margin-top:6px}
+    .tag{display:inline-block;background:#E1F5EE;color:#0F6E56;font-size:11px;padding:3px 10px;border-radius:20px;margin-top:10px}
+    .breathing-btn{margin-top:14px;padding:9px 18px;background:#1D9E75;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px}
+    .breathing-btn:hover{background:#0F6E56}
+    #breatheStatus{margin-top:10px;font-size:13px;color:#1D9E75;font-weight:500;min-height:20px}
+  </style>
+</head>
+<body>
+  <a href="/" class="back">← Back to chat</a>
+  <h1>🧘 Coping Techniques</h1>
+  <p class="subtitle">Simple, science-backed tools to help you feel better right now.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">🫁</div>
+      <h2>Box Breathing</h2>
+      <p>A powerful technique used by Navy SEALs to reduce stress instantly.</p>
+      <ol>
+        <li>Inhale for <strong>4 seconds</strong></li>
+        <li>Hold for <strong>4 seconds</strong></li>
+        <li>Exhale for <strong>4 seconds</strong></li>
+        <li>Hold for <strong>4 seconds</strong></li>
+      </ol>
+      <button class="breathing-btn" onclick="startBreathing()">Start Exercise</button>
+      <div id="breatheStatus"></div>
+      <span class="tag">Anxiety Relief</span>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">👁️</div>
+      <h2>5-4-3-2-1 Grounding</h2>
+      <p>Bring yourself back to the present moment when feeling overwhelmed.</p>
+      <ul>
+        <li>Name <strong>5 things</strong> you can see</li>
+        <li>Name <strong>4 things</strong> you can touch</li>
+        <li>Name <strong>3 things</strong> you can hear</li>
+        <li>Name <strong>2 things</strong> you can smell</li>
+        <li>Name <strong>1 thing</strong> you can taste</li>
+      </ul>
+      <span class="tag">Panic Attack</span>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">📓</div>
+      <h2>Journaling Prompts</h2>
+      <p>Writing helps process emotions. Try one of these prompts today:</p>
+      <ul>
+        <li>What am I feeling right now and why?</li>
+        <li>What is one thing I am grateful for today?</li>
+        <li>What would I tell a friend going through this?</li>
+        <li>What is one small step I can take today?</li>
+      </ul>
+      <span class="tag">Depression</span>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🚶</div>
+      <h2>Movement Reset</h2>
+      <p>Even 10 minutes of movement releases endorphins and boosts mood.</p>
+      <ul>
+        <li>Walk outside for 10 minutes</li>
+        <li>Do 20 jumping jacks</li>
+        <li>Stretch for 5 minutes</li>
+        <li>Dance to one song</li>
+      </ul>
+      <span class="tag">Low Mood</span>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">😴</div>
+      <h2>Sleep Hygiene</h2>
+      <p>Poor sleep worsens anxiety and depression. Try these tonight:</p>
+      <ul>
+        <li>No screens 30 mins before bed</li>
+        <li>Keep a consistent sleep time</li>
+        <li>Keep your room cool and dark</li>
+        <li>Write a worry list before sleeping</li>
+      </ul>
+      <span class="tag">Stress</span>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🤝</div>
+      <h2>Reach Out</h2>
+      <p>Talking to someone is the most powerful coping tool of all.</p>
+      <ul>
+        <li>Text a friend right now</li>
+        <li>Call a family member</li>
+        <li>iCall India: <strong>9152987821</strong></li>
+        <li>Vandrevala Foundation: <strong>1860-2662-345</strong></li>
+      </ul>
+      <span class="tag">Loneliness</span>
+    </div>
+  </div>
+
+  <script>
+    let breatheInterval = null;
+    const steps = [
+      {text: "Inhale... 🫁", duration: 4000},
+      {text: "Hold... ⏸️", duration: 4000},
+      {text: "Exhale... 💨", duration: 4000},
+      {text: "Hold... ⏸️", duration: 4000}
+    ];
+
+    function startBreathing() {
+      if (breatheInterval) { clearTimeout(breatheInterval); }
+      const status = document.getElementById('breatheStatus');
+      let cycle = 0, step = 0, rounds = 0;
+
+      function next() {
+        if (rounds >= 4) { status.textContent = "✅ Well done! You completed 4 cycles."; return; }
+        status.textContent = steps[step].text;
+        breatheInterval = setTimeout(() => {
+          step++;
+          if (step >= steps.length) { step = 0; rounds++; }
+          next();
+        }, steps[step < steps.length ? step : 0].duration);
+      }
+      next();
+    }
+  </script>
+</body>
+</html>

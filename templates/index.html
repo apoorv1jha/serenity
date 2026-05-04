@@ -2,19 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Serenity – Mental Health Support</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Fraunces:wght@300;400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
 </head>
 <body>
 
-<!-- Mobile overlay for sidebar -->
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <div class="app-shell">
-
   <!-- ── Sidebar ── -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -22,14 +20,16 @@
         <span class="brand-icon">🌿</span>
         <span class="brand-name">Serenity</span>
       </div>
-      <button class="new-chat-btn" onclick="newSession()">+ New chat</button>
+      <div class="sidebar-actions">
+        <button class="new-chat-btn" onclick="newSession()">+ New chat</button>
+        <button class="icon-btn" id="darkBtn" onclick="toggleDark()" title="Toggle dark mode">🌙</button>
+        <button class="icon-btn" id="langBtn" onclick="toggleLanguage()" title="Switch language" style="font-size:11px;width:auto;padding:0 8px;">🇮🇳 हिंदी</button>
+      </div>
     </div>
 
     <div class="session-list" id="sessionList">
       {% for s in sessions %}
-      <div class="session-item {% if loop.first %}active{% endif %}"
-           id="sess-{{ s.id }}"
-           onclick="loadSession({{ s.id }})">
+      <div class="session-item {% if loop.first %}active{% endif %}" id="sess-{{ s.id }}" onclick="loadSession({{ s.id }})">
         <span class="sess-title">{{ s.title }}</span>
         <button class="sess-del" onclick="deleteSession(event, {{ s.id }})" title="Delete">✕</button>
       </div>
@@ -46,24 +46,28 @@
           <p class="user-email">{{ user.email }}</p>
         </div>
       </div>
-      <a href="/logout" class="logout-btn">Sign out</a>
+      <div class="footer-btns">
+        <button class="export-btn" onclick="exportSession()">⬇️ Export</button>
+        <a href="/coping" class="coping-btn">🧘 Coping</a>
+        {% if user.is_admin %}<a href="/admin" class="coping-btn">⚙️ Admin</a>{% endif %}
+        <a href="/logout" class="logout-btn">Sign out</a>
+      </div>
     </div>
   </aside>
 
-  <!-- ── Main chat ── -->
+  <!-- ── Main ── -->
   <main class="chat-main">
-
-    <!-- Top bar (mobile) -->
     <div class="topbar">
-      <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">☰</button>
+      <button class="hamburger" onclick="openSidebar()">☰</button>
       <span class="topbar-title">🌿 Serenity</span>
-      <div style="width:40px"></div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" onclick="toggleDark()">🌙</button>
+        <button class="topbar-icon-btn" onclick="showMoodChecker()">😊</button>
+      </div>
     </div>
 
-    <!-- Messages -->
     <div class="messages" id="messages"></div>
 
-    <!-- Crisis banner -->
     <div id="crisisBanner" class="crisis-banner">
       🆘 <strong>You are not alone.</strong>
       Emergency: <a href="tel:112">112</a> &nbsp;|&nbsp;
@@ -71,8 +75,13 @@
       Vandrevala (24/7): <a href="tel:18602662345">1860-2662-345</a>
     </div>
 
-    <!-- Input -->
     <div class="input-area">
+      <div class="input-toolbar">
+        <button class="tool-btn" onclick="showMoodChecker()">😊 Mood</button>
+        <button class="tool-btn" onclick="exportSession()">⬇️ Export</button>
+        <a href="/coping" class="tool-btn">🧘 Coping Tips</a>
+        <a href="/anon" class="tool-btn" target="_blank">👤 Anonymous</a>
+      </div>
       <textarea id="userInput" placeholder="Share what's on your mind…" rows="1"
         onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
       <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
@@ -83,7 +92,6 @@
         </svg>
       </button>
     </div>
-
   </main>
 </div>
 
